@@ -1,7 +1,6 @@
 package gr.ckaraiskos.candlefactory.candle.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -25,10 +24,10 @@ public class Leave {
     @ManyToOne(optional = false)
     private Worker worker;
 
-    @NotBlank
+    @NotNull
     private LocalDate startDate;
 
-    @NotBlank
+    @NotNull
     private LocalDate endDate;
 
     public int calculateLeaveDays() {
