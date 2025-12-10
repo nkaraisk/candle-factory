@@ -28,4 +28,10 @@ public class RestExceptionHandler {
         log.error("LeaveComponentFailureException", ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
+
+    @ExceptionHandler(FailedDeletionException.class)
+    public ResponseEntity<String> handleFailedDeletionException(FailedDeletionException ex) {
+        log.error("FailedDeletionException", ex);
+        return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(ex.getMessage());
+    }
 }

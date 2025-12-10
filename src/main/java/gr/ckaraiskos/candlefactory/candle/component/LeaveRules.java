@@ -1,4 +1,4 @@
-package gr.ckaraiskos.candlefactory.candle.operation;
+package gr.ckaraiskos.candlefactory.candle.component;
 
 import gr.ckaraiskos.candlefactory.candle.dto.LeaveDto;
 import gr.ckaraiskos.candlefactory.candle.entity.Leave;
@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;

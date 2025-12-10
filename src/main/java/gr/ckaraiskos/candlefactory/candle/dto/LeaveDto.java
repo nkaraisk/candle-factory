@@ -1,6 +1,5 @@
 package gr.ckaraiskos.candlefactory.candle.dto;
 
-import gr.ckaraiskos.candlefactory.candle.entity.Worker;
 import lombok.Data;
 
 import java.time.LocalDate;

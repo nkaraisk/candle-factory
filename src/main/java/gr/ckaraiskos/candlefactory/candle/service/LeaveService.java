@@ -4,7 +4,7 @@ import gr.ckaraiskos.candlefactory.candle.dto.LeaveDto;
 import gr.ckaraiskos.candlefactory.candle.entity.Leave;
 import gr.ckaraiskos.candlefactory.candle.exception.EntityNotFoundException;
 import gr.ckaraiskos.candlefactory.candle.exception.LeaveComponentFailureException;
-import gr.ckaraiskos.candlefactory.candle.operation.LeaveRules;
+import gr.ckaraiskos.candlefactory.candle.component.LeaveRules;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

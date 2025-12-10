@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 
 @Entity
 @Builder
@@ -20,13 +22,9 @@ public class Customer {
     @NotBlank
     private String name;
 
-    private String phone;
+    private String phoneNumber;
 
-    private double debt; // συνολικό χρέος
+    @Column(precision = 19, scale = 2)
+    private BigDecimal debt; // συνολικό χρέος
 
-    private double credit; // πίστωση (απόκερο)
-
-    private double total;
-
-    public double calculateTotal() { return debt - credit; }
 }

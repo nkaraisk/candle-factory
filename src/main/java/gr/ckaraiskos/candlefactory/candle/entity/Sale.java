@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -33,9 +34,11 @@ public class Sale {
     @Positive
     private double quantity;
 
-    private double cost;
+    private BigDecimal cost;
 
-    public double calculateCost() {
-        return quantity * productType.getPrice();
+    public BigDecimal calculateCost() {
+        BigDecimal weightBD = BigDecimal.valueOf(quantity);
+
+        return weightBD.multiply(cost);
     }
 }

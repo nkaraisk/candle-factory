@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Entity
 @Builder
 @Setter
@@ -33,5 +35,6 @@ public class Product {
     private boolean byWeight; // true αν ζυγίζεται, false αν τεμάχια
 
     @Positive
-    private double price; // Τιμή ανά κιλό ή ανά τεμάχιο
+    @Column(precision = 19, scale = 2)
+    private BigDecimal price; // Τιμή ανά κιλό ή ανά τεμάχιο
 }

@@ -24,7 +24,7 @@ public class LeaveController {
 
     @PostMapping("/add")
     public ResponseEntity<Leave> requestLeave(@RequestBody LeaveDto leaveDto) {
-        log.info("Requesting leave for worker with ID:{}", leaveDto.getWorkerId());
+        log.info("Requested leave for worker with ID:{}", leaveDto.getWorkerId());
 
         return leaveService.addLeave(leaveDto);
     }
