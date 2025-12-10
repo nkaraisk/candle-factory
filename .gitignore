@@ -23,6 +23,8 @@ target/
 /nbproject/private/
 /nbbuild/
 /dist/
+/frontend/dist/
+/frontend/node/
 /nbdist/
 /.nb-gradle/
 build/
@@ -31,3 +33,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Frontend artifacts
+node_modules/
+/frontend/node_modules/

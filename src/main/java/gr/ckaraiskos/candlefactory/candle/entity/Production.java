@@ -1,7 +1,8 @@
 package gr.ckaraiskos.candlefactory.candle.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -19,13 +20,13 @@ public class Production {
     @Column(updatable = false, nullable = false, unique = true)
     private Long Id;
 
-    @NotBlank
+    @NotNull
     private LocalDate dateOfProduction;
 
-    @NotBlank
+    @NotNull
     @ManyToOne(optional = false)
     private Product product;
 
-    @NotBlank
+    @Positive
     private double quantity;// κιλά ή τεμάχια, ανάλογα productType.byWeight
 }

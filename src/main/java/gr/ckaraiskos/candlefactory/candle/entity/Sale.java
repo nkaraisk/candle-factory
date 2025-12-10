@@ -1,7 +1,8 @@
 package gr.ckaraiskos.candlefactory.candle.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -19,17 +20,17 @@ public class Sale {
     @Column(updatable = false, nullable = false, unique = true)
     private Long id;
 
-    @NotBlank
+    @NotNull
     @ManyToOne(optional = false)
     private Customer customer;
 
-    @NotBlank
+    @NotNull
     private LocalDate date;
 
     @ManyToOne(optional = false)
     private Product productType;
 
-    @NotBlank
+    @Positive
     private double quantity;
 
     private double cost;

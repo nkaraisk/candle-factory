@@ -1,7 +1,8 @@
 package gr.ckaraiskos.candlefactory.candle.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.*;
 import java.time.LocalDate;
 
@@ -20,17 +21,17 @@ public class ReturnedWax {
     @Column(updatable = false, nullable = false, unique = true)
     private Long Id;
 
-    @NotBlank
+    @NotNull
     private LocalDate returnDate;
 
-    @NotBlank
+    @NotNull
     @ManyToOne(optional = false)
     private Customer customer;
 
-    @NotBlank
+    @NotNull
     private Product.materialType material;
 
-    @NotBlank
+    @Positive
     private double weight;
 
     private double value;
