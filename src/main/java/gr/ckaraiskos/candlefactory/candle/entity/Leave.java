@@ -2,9 +2,11 @@ package gr.ckaraiskos.candlefactory.candle.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 @Entity
 @Builder
@@ -19,7 +21,7 @@ public class Leave {
     @Column(updatable = false, nullable = false, unique = true)
     private Long id;
 
-    @NotBlank
+    @NotNull
     @ManyToOne(optional = false)
     private Worker worker;
 
@@ -29,8 +31,12 @@ public class Leave {
     @NotBlank
     private LocalDate endDate;
 
-    private int numOfLeaveDays() {
-        return endDate.getDayOfYear() - startDate.getDayOfYear();
-        // Να τσεκάρω τι γίνεται σε περίπτωση που πέφτει σε αλλαγή μήνα και χρόνου!!!!!!!
+    public int calculateLeaveDays() {
+        // Το +1 χρειάζεται επειδή η between είναι "exclusive" στο τέλος.
+        // Π.χ. Δευτέρα με Δευτέρα = 0 διαφορά, αλλά 1 μέρα άδειας.
+        long days = ChronoUnit.DAYS.between(startDate, endDate) + 1;
+
+        return (int) days;
     }
+
 }

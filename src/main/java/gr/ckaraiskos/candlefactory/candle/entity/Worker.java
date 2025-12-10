@@ -29,8 +29,8 @@ public class Worker {
 
     @Override
     public String toString() {
-        return firstName + " " + lastName +  "\n"
-                + "Τηλέφωνο: " + phoneNumber + "\n"
-                + "'Εχει πάρει " + daysOfLeave + " ημέρες άδεια.";
+        return firstName + " " + lastName +  " "
+                + "Phone Number: " + phoneNumber + " "
+                + daysOfLeave + " days of leave have been used.";
     }
 }
