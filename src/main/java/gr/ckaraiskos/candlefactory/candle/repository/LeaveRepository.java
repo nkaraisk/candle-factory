@@ -22,4 +22,6 @@ public interface LeaveRepository extends JpaRepository<Leave, Long> {
               AND l.endDate >= :startDate
             """)
     List<Leave> findOverlappingLeaves(LocalDate startDate, LocalDate endDate);
+
+    List<Leave> findAllByWorker_Id(Long workerId);
 }

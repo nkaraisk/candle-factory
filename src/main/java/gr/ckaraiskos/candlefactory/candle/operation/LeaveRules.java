@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -142,6 +143,30 @@ public class LeaveRules {
 
         log.error("Failed to change leave with id: {}.", requestedLeave.getLeaveId());
         throw new EntityNotFoundException("No leave found with id: " + requestedLeave.getLeaveId() + ".");
+    }
+
+    public List<Leave> leavesFind(Long workerId) throws LeaveComponentFailureException {
+        List<Leave> leaves = leaveRepository.findAllByWorker_Id(workerId);
+
+        if(leaves.isEmpty()) {
+            log.error("No leave found for worker id: {}.", workerId);
+            throw new LeaveComponentFailureException("No leave found for worker with id: " + workerId);
+        }
+
+        log.info("Found leaves with worker id: {}.", workerId);
+        return leaves;
+    }
+
+    public List<Leave> leavesDayFind() throws LeaveComponentFailureException {
+        List<Leave> leaves = leaveRepository.findOverlappingLeaves(LocalDate.now(),  LocalDate.now());
+
+        if(leaves.isEmpty()) {
+            log.error("No leave found for date {}.", LocalDate.now());
+            throw new LeaveComponentFailureException("No leave found for date " + LocalDate.now());
+        }
+
+        log.info("Found leaves for date {}.", LocalDate.now());
+        return leaves;
     }
 
     @Scheduled(cron = "0 0 0 1 1 ?") // 1η Ιανουαρίου τα μεσάνυχτα

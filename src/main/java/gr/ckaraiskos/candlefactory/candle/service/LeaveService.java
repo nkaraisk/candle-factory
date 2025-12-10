@@ -10,6 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Slf4j
 @Service
@@ -43,5 +46,23 @@ public class LeaveService {
         log.info("Successfully deleted leave with id: {}.", deletingLeave.getLeaveId());
 
         return  ResponseEntity.noContent().build();
+    }
+
+    public ResponseEntity<List<Leave>> workerLeaves(Long workerId) throws LeaveComponentFailureException {
+        log.info("Getting leaves for worker");
+
+        List<Leave> leaves = leaveRules.leavesFind(workerId);
+        log.info("Successfully getting leaves for worker.");
+
+        return ResponseEntity.ok(leaves);
+    }
+
+    public ResponseEntity<List<Leave>> daysLeaves() throws LeaveComponentFailureException {
+        log.info("Getting leaves for the day");
+
+        List<Leave> leaves = leaveRules.leavesDayFind();
+        log.info("Successfully getting leaves for the day.");
+
+        return ResponseEntity.ok(leaves);
     }
 }
