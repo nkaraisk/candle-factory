@@ -20,6 +20,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ProductComponent {
 
+    private final StorageComponent storageComponent;
     private final ProductRepository productRepository;
 
     @Transactional
@@ -54,6 +55,9 @@ public class ProductComponent {
         log.info("Saving product.");
         productRepository.save(newProduct);
         log.info("Added product Successfully.");
+
+        log.info("Initiating storage for new product.");
+        storageComponent.initiateStorage(newProduct);
 
         return newProduct;
     }
@@ -106,11 +110,14 @@ public class ProductComponent {
         log.info("Trying to HARD delete product.");
 
         log.info("Checking if product exists.");
-        productRepository.findById(productId)
+        Product deletingProduct = productRepository.findById(productId)
                 .orElseThrow(() -> {
                     log.error("Product with id {} not found.", productId);
                     return new EntityNotFoundException("Product with id:" +productId + "not found.");
                 });
+
+        log.info("Deleting product storage");
+        storageComponent.deleteByProduct(deletingProduct);
 
         log.info("Successfully retrieved product. Deleting...");
         productRepository.deleteById(productId);
@@ -186,5 +193,17 @@ public class ProductComponent {
 
         log.error("Product with material: {} and product code: {} not found.",  material, productCode);
         throw new EntityNotFoundException("Product with material: " + material + " and product code: " + productCode + " not found.");
+    }
+
+    public Product tryFindProduct(Long productId) throws EntityNotFoundException {
+        log.info("Trying to find product with id {}", productId);
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> {
+                    log.error("Product with id {} not found.", productId);
+                    return new EntityNotFoundException("Product with id:" + productId + " not found.");
+        });
+
+        return product;
     }
 }
