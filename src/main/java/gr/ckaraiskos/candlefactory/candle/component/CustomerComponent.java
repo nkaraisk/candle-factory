@@ -66,14 +66,14 @@ public class CustomerComponent {
 
     public void tryDeleteCustomer(Long customerId) throws EntityNotFoundException, FailedDeletionException {
         log.info("Searching customer with Id:{}.", customerId);
-        Optional<Customer> customer = customerRepository.findById(customerId);
+        customerRepository.findById(customerId)
+                .orElseThrow(() -> {
+                    log.error("Customer with Id:{} does not exist.", customerId);
+                    return new EntityNotFoundException("Customer with Id:" + customerId + " does not exist.");
+                });
+        log.info("Deleting customer.");
+        customerRepository.deleteById(customerId);
 
-        if (customer.isPresent()) {
-            log.info("Deleting customer.");
-            customerRepository.delete(customer.get());
-            log.info("Successfully deleted customer.");
-            return;
-        }
 
         Optional<Customer> deletedCustomer = customerRepository.findById(customerId);
         if (deletedCustomer.isPresent()) {
@@ -81,8 +81,7 @@ public class CustomerComponent {
             throw new FailedDeletionException("Failed to delete customer.");
         }
 
-        log.error("Customer with Id:{} doesn't exist.", customerId);
-        throw new EntityNotFoundException("Customer with Id:" + customerId + " does not exist.");
+        log.info("Successfully deleted customer.");
     }
 
     public List<Customer> tryGetAll() throws EntityNotFoundException {

@@ -2,6 +2,7 @@ package gr.ckaraiskos.candlefactory.candle.exception.handler;
 
 import gr.ckaraiskos.candlefactory.candle.exception.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -33,5 +34,12 @@ public class RestExceptionHandler {
     public ResponseEntity<String> handleFailedDeletionException(FailedDeletionException ex) {
         log.error("FailedDeletionException", ex);
         return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<String> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        log.error("Database Integrity Violation: {}", ex.getMessage());
+        // Επιστρέφουμε 409 CONFLICT
+        return ResponseEntity.status(HttpStatus.CONFLICT).body("Δεν μπορεί να ολοκληρωθεί η ενέργεια. Το στοιχείο χρησιμοποιείται ήδη σε άλλη εγγραφή ή υπάρχει παραβίαση μοναδικότητας.");
     }
 }

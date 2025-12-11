@@ -28,4 +28,5 @@ public class Production {
 
     @Positive
     private double quantity;// κιλά ή τεμάχια, ανάλογα productType.byWeight
+
 }
