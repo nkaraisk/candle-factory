@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @Entity
 @Builder
 @Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Production {
@@ -28,5 +29,4 @@ public class Production {
 
     @Positive
     private double quantity;// κιλά ή τεμάχια, ανάλογα productType.byWeight
-
 }
