@@ -41,4 +41,22 @@ public class ProductService {
         productComponent.trySoftDeleteProduct(productId);
         return ResponseEntity.noContent().build();
     }
+
+    public ResponseEntity<Void> hardDelete(Long productId) {
+        log.info("Hard delete product {}", productId);
+        productComponent.tryHardDeleteProduct(productId);
+        return ResponseEntity.noContent().build();
+    }
+
+    public ResponseEntity<List<Product>> getByMaterial(Product.materialType material) {
+        return ResponseEntity.ok(productComponent.tryGetAllProductsByMaterial(material));
+    }
+
+    public ResponseEntity<List<Product>> getByCode(String code) {
+        return ResponseEntity.ok(productComponent.tryGetAllProductsByProductCode(code));
+    }
+
+    public ResponseEntity<Product> getByMaterialAndCode(Product.materialType material, String code) {
+        return ResponseEntity.ok(productComponent.tryGetSpecificProduct(material, code));
+    }
 }

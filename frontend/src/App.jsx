@@ -25,6 +25,14 @@ import {
   fetchReturns,
   fetchSales,
   requestLeave,
+  searchProductionByDate,
+  searchProductionByDateAndProduct,
+  searchProductionByProduct,
+  searchCustomerByName,
+  searchCustomerByPhone,
+  searchProductByMaterialAndCode,
+  searchProductsByCode,
+  searchProductsByMaterial,
   searchWorkerByFirstName,
   searchWorkerByFullName,
   searchWorkerByLastName,
@@ -66,6 +74,8 @@ function App() {
     quantity: 0,
     date: '',
   });
+  const [productionSearch, setProductionSearch] = useState({ productId: '', date: '' });
+  const [productionMatches, setProductionMatches] = useState([]);
   const [saleForm, setSaleForm] = useState({ customerId: '', productId: '', quantity: 0, date: '' });
   const [returnForm, setReturnForm] = useState({
     customerId: '',
@@ -74,6 +84,10 @@ function App() {
     returnDate: '',
     note: '',
   });
+  const [customerSearch, setCustomerSearch] = useState({ name: '', phone: '' });
+  const [customerMatches, setCustomerMatches] = useState([]);
+  const [productSearch, setProductSearch] = useState({ material: '', code: '' });
+  const [productMatches, setProductMatches] = useState([]);
 
   const selectedWorker = useMemo(
     () => workers.find((worker) => worker.id === selectedWorkerId) || null,
@@ -265,6 +279,21 @@ function App() {
     setReturnForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  const updateProductionSearch = (e) => {
+    const { name, value } = e.target;
+    setProductionSearch((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const updateCustomerSearch = (e) => {
+    const { name, value } = e.target;
+    setCustomerSearch((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const updateProductSearch = (e) => {
+    const { name, value } = e.target;
+    setProductSearch((prev) => ({ ...prev, [name]: value }));
+  };
+
   const handleCreateWorker = async (payload) => {
     setLoadingWorkers(true);
     try {
@@ -426,6 +455,112 @@ function App() {
       pushStatus('error', err.message);
     } finally {
       setLoadingOps(false);
+    }
+  };
+
+  const handleCustomerSearch = async (mode) => {
+    try {
+      let matches = [];
+
+      if (mode === 'name') {
+        if (!customerSearch.name.trim()) {
+          pushStatus('info', 'Enter a name to search customers.');
+          return;
+        }
+        const match = await searchCustomerByName(customerSearch.name.trim());
+        matches = match ? [match] : [];
+      }
+      if (mode === 'phone') {
+        if (!customerSearch.phone.trim()) {
+          pushStatus('info', 'Enter a phone to search customers.');
+          return;
+        }
+        const match = await searchCustomerByPhone(customerSearch.phone.trim());
+        matches = match ? [match] : [];
+      }
+      setCustomerMatches(matches);
+      if (!matches.length) {
+        pushStatus('info', 'No customers found for that search.');
+      }
+    } catch (err) {
+      setCustomerMatches([]);
+      pushStatus('error', err.message);
+    }
+  };
+
+  const handleProductSearch = async (mode) => {
+    try {
+      if (mode === 'material') {
+        if (!productSearch.material.trim()) {
+          pushStatus('info', 'Select a material to search products.');
+          return;
+        }
+        const results = await searchProductsByMaterial(productSearch.material.trim());
+        setProductMatches(results);
+        if (!results.length) pushStatus('info', 'No products found for that material.');
+      }
+      if (mode === 'code') {
+        if (!productSearch.code.trim()) {
+          pushStatus('info', 'Enter a product code to search.');
+          return;
+        }
+        const results = await searchProductsByCode(productSearch.code.trim());
+        setProductMatches(results);
+        if (!results.length) pushStatus('info', 'No products found for that code.');
+      }
+      if (mode === 'both') {
+        if (!productSearch.material.trim() || !productSearch.code.trim()) {
+          pushStatus('info', 'Provide both material and code to search.');
+          return;
+        }
+        const result = await searchProductByMaterialAndCode(
+          productSearch.material.trim(),
+          productSearch.code.trim(),
+        );
+        setProductMatches(result ? [result] : []);
+        if (!result) pushStatus('info', 'No product found for that combination.');
+      }
+    } catch (err) {
+      setProductMatches([]);
+      pushStatus('error', err.message);
+    }
+  };
+
+  const handleProductionSearch = async (mode) => {
+    try {
+      let results = [];
+      if (mode === 'product') {
+        if (!productionSearch.productId) {
+          pushStatus('info', 'Choose a product first.');
+          return;
+        }
+        results = await searchProductionByProduct(Number(productionSearch.productId));
+      }
+      if (mode === 'date') {
+        if (!productionSearch.date) {
+          pushStatus('info', 'Pick a date first.');
+          return;
+        }
+        results = await searchProductionByDate(productionSearch.date);
+      }
+      if (mode === 'both') {
+        if (!productionSearch.date || !productionSearch.productId) {
+          pushStatus('info', 'Select both date and product to search a specific entry.');
+          return;
+        }
+        const match = await searchProductionByDateAndProduct(
+          productionSearch.date,
+          Number(productionSearch.productId),
+        );
+        results = match ? [match] : [];
+      }
+      setProductionMatches(results);
+      if (!results.length) {
+        pushStatus('info', 'No production entries found.');
+      }
+    } catch (err) {
+      setProductionMatches([]);
+      pushStatus('error', err.message);
     }
   };
 
@@ -1053,6 +1188,175 @@ function App() {
               {!productions.length ? <p className="muted small">No production entries yet.</p> : null}
             </div>
           </div>
+
+          <div className="panel-inner">
+            <div className="panel-header">
+              <div>
+                <p className="eyebrow">Production lookup</p>
+                <h3>Search by product/date</h3>
+              </div>
+              <span className="pill ghost">{productionMatches.length || '·'}</span>
+            </div>
+            <div className="search-grid compact">
+              <div className="search-card">
+                <label className="field">
+                  <span>Product</span>
+                  <select name="productId" value={productionSearch.productId} onChange={updateProductionSearch}>
+                    <option value="">Select product</option>
+                    {products.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.productCode}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <div className="actions">
+                  <button className="ghost" type="button" onClick={() => handleProductionSearch('product')}>
+                    By product
+                  </button>
+                </div>
+              </div>
+              <div className="search-card">
+                <label className="field">
+                  <span>Date</span>
+                  <input type="date" name="date" value={productionSearch.date} onChange={updateProductionSearch} />
+                </label>
+                <div className="actions">
+                  <button className="ghost" type="button" onClick={() => handleProductionSearch('date')}>
+                    By date
+                  </button>
+                </div>
+              </div>
+              <div className="search-card">
+                <div className="fields">
+                  <label className="field">
+                    <span>Date</span>
+                    <input type="date" name="date" value={productionSearch.date} onChange={updateProductionSearch} />
+                  </label>
+                  <label className="field">
+                    <span>Product</span>
+                    <select name="productId" value={productionSearch.productId} onChange={updateProductionSearch}>
+                      <option value="">Select product</option>
+                      {products.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.productCode}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+                <div className="actions">
+                  <button className="primary" type="button" onClick={() => handleProductionSearch('both')}>
+                    Date + product
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div className="list">
+              {productionMatches.length ? (
+                productionMatches.map((prod) => (
+                  <div key={prod.id} className="list-item">
+                    <div>
+                      <p className="strong">#{prod.id}</p>
+                      <p className="muted small">
+                        {prod.dateOfProduction} · {prod.product?.productCode ?? '—'}
+                      </p>
+                    </div>
+                    <div className="actions">
+                      <span className="pill ghost mono">{prod.quantity} qty</span>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="muted small">No matches yet. Run a search.</p>
+              )}
+            </div>
+          </div>
+
+          <div className="panel-inner">
+            <div className="panel-header">
+              <div>
+                <p className="eyebrow">Product lookup</p>
+                <h3>Search by material/code</h3>
+              </div>
+              <span className="pill ghost">{productMatches.length || '·'}</span>
+            </div>
+            <div className="search-grid compact">
+              <div className="search-card">
+                <label className="field">
+                  <span>Material</span>
+                  <select name="material" value={productSearch.material} onChange={updateProductSearch}>
+                    <option value="">Pick material</option>
+                    <option>Brown</option>
+                    <option>White</option>
+                    <option>Pure</option>
+                  </select>
+                </label>
+                <div className="actions">
+                  <button className="ghost" type="button" onClick={() => handleProductSearch('material')}>
+                    Search by material
+                  </button>
+                </div>
+              </div>
+              <div className="search-card">
+                <label className="field">
+                  <span>Code</span>
+                  <input name="code" value={productSearch.code} onChange={updateProductSearch} placeholder="WX-24" />
+                </label>
+                <div className="actions">
+                  <button className="ghost" type="button" onClick={() => handleProductSearch('code')}>
+                    Search by code
+                  </button>
+                </div>
+              </div>
+              <div className="search-card">
+                <div className="fields">
+                  <label className="field">
+                    <span>Material</span>
+                    <select name="material" value={productSearch.material} onChange={updateProductSearch}>
+                      <option value="">Pick material</option>
+                      <option>Brown</option>
+                      <option>White</option>
+                      <option>Pure</option>
+                    </select>
+                  </label>
+                  <label className="field">
+                    <span>Code</span>
+                    <input
+                      name="code"
+                      value={productSearch.code}
+                      onChange={updateProductSearch}
+                      placeholder="WX-24"
+                    />
+                  </label>
+                </div>
+                <div className="actions">
+                  <button className="primary" type="button" onClick={() => handleProductSearch('both')}>
+                    Search combination
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div className="list">
+              {productMatches.length ? (
+                productMatches.map((p) => (
+                  <div key={p.id} className="list-item">
+                    <div>
+                      <p className="strong">
+                        {p.productCode} · {p.material}
+                      </p>
+                      <p className="muted small">{p.byWeight ? 'By weight' : 'By unit'}</p>
+                    </div>
+                    <div className="actions">
+                      <span className="pill ghost mono">€{p.price}</span>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="muted small">No products found. Run a search.</p>
+              )}
+            </div>
+          </div>
         </section>
         ) : null}
 
@@ -1128,12 +1432,12 @@ function App() {
             {!customers.length ? <p className="muted small">No customers yet.</p> : null}
           </div>
 
-          <div className="panel-inner stacked">
-            <div className="panel-header">
-              <div>
-                <p className="eyebrow">Sales</p>
-                <h3>Record sale</h3>
-              </div>
+            <div className="panel-inner stacked">
+              <div className="panel-header">
+                <div>
+                  <p className="eyebrow">Sales</p>
+                  <h3>Record sale</h3>
+                </div>
               <span className="pill ghost">{sales.length}</span>
             </div>
             <form className="panel-form" onSubmit={handleSaleCreate}>
@@ -1202,14 +1506,14 @@ function App() {
               ))}
               {!sales.length ? <p className="muted small">No sales logged.</p> : null}
             </div>
-          </div>
+            </div>
 
-          <div className="panel-inner stacked">
-            <div className="panel-header">
-              <div>
-                <p className="eyebrow">Returned wax</p>
-                <h3>Recycle</h3>
-              </div>
+            <div className="panel-inner stacked">
+              <div className="panel-header">
+                <div>
+                  <p className="eyebrow">Returned wax</p>
+                  <h3>Recycle</h3>
+                </div>
               <span className="pill ghost">{returns.length}</span>
             </div>
             <form className="panel-form" onSubmit={handleReturnCreate}>
@@ -1277,6 +1581,67 @@ function App() {
                 </div>
               ))}
               {!returns.length ? <p className="muted small">No returns recorded.</p> : null}
+            </div>
+          </div>
+
+          <div className="panel-inner stacked">
+            <div className="panel-header">
+              <div>
+                <p className="eyebrow">Customer lookup</p>
+                <h3>Search by name or phone</h3>
+              </div>
+              <span className="pill ghost">{customerMatches.length || '·'}</span>
+            </div>
+            <div className="search-grid compact">
+              <div className="search-card">
+                <label className="field">
+                  <span>Name</span>
+                  <input
+                    name="name"
+                    value={customerSearch.name}
+                    onChange={updateCustomerSearch}
+                    placeholder="Customer name"
+                  />
+                </label>
+                <div className="actions">
+                  <button className="ghost" type="button" onClick={() => handleCustomerSearch('name')}>
+                    Search by name
+                  </button>
+                </div>
+              </div>
+              <div className="search-card">
+                <label className="field">
+                  <span>Phone</span>
+                  <input
+                    name="phone"
+                    value={customerSearch.phone}
+                    onChange={updateCustomerSearch}
+                    placeholder="+30..."
+                  />
+                </label>
+                <div className="actions">
+                  <button className="ghost" type="button" onClick={() => handleCustomerSearch('phone')}>
+                    Search by phone
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div className="list">
+              {customerMatches.length ? (
+                customerMatches.map((c) => (
+                  <div key={c.id} className="list-item">
+                    <div>
+                      <p className="strong">{c.name}</p>
+                      <p className="muted small">{c.phoneNumber}</p>
+                    </div>
+                    <div className="actions">
+                      <span className="pill ghost mono">€{Number(c.debt ?? 0)}</span>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="muted small">No matches yet. Run a search.</p>
+              )}
             </div>
           </div>
         </section>

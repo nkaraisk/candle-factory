@@ -101,6 +101,17 @@ export const updateProduct = (productId, payload) =>
 
 export const deleteProduct = (productId) => request(`/product/${productId}`, { method: 'DELETE' });
 
+export const searchProductsByMaterial = (material) =>
+  request(`/product/material?material=${encodeURIComponent(material)}`, { method: 'GET' });
+
+export const searchProductsByCode = (productCode) =>
+  request(`/product/code?productCode=${encodeURIComponent(productCode)}`, { method: 'GET' });
+
+export const searchProductByMaterialAndCode = (material, productCode) =>
+  request(`/product/lookup?material=${encodeURIComponent(material)}&productCode=${encodeURIComponent(productCode)}`, {
+    method: 'GET',
+  });
+
 // Customers
 export const fetchCustomers = () => request('/customer', { method: 'GET' });
 
@@ -112,6 +123,12 @@ export const updateCustomer = (customerId, payload) =>
 
 export const deleteCustomer = (customerId) => request(`/customer/${customerId}`, { method: 'DELETE' });
 
+export const searchCustomerByName = (customerName) =>
+  request(`/customer/name?customerName=${encodeURIComponent(customerName)}`, { method: 'GET' });
+
+export const searchCustomerByPhone = (customerPhone) =>
+  request(`/customer/phoneNumber?customerPhone=${encodeURIComponent(customerPhone)}`, { method: 'GET' });
+
 // Production
 export const fetchProductions = () => request('/production', { method: 'GET' });
 
@@ -120,6 +137,17 @@ export const createProduction = (payload) =>
 
 export const deleteProduction = (productionId) =>
   request(`/production/${productionId}`, { method: 'DELETE' });
+
+export const searchProductionByProduct = (productId) =>
+  request(`/production/${encodeURIComponent(productId)}/getProduct`, { method: 'GET' });
+
+export const searchProductionByDate = (date) =>
+  request(`/production/${encodeURIComponent(date)}/getDate`, { method: 'GET' });
+
+export const searchProductionByDateAndProduct = (date, productId) =>
+  request(`/production/getSpecific?date=${encodeURIComponent(date)}&productId=${encodeURIComponent(productId)}`, {
+    method: 'GET',
+  });
 
 // Sales
 export const fetchSales = () => request('/sale', { method: 'GET' });
