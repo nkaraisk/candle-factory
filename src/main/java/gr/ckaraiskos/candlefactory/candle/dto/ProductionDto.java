@@ -1,7 +1,7 @@
 package gr.ckaraiskos.candlefactory.candle.dto;
 
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -17,6 +17,7 @@ public class ProductionDto {
     @NotNull
     private Long productId;
 
-    @Positive
-    private double quantity;
+    @NotNull
+    @PositiveOrZero
+    private Double quantity;
 }

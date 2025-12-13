@@ -18,7 +18,7 @@ public class Production {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(updatable = false, nullable = false, unique = true)
-    private Long Id;
+    private Long id;
 
     @NotNull
     private LocalDate dateOfProduction;

@@ -18,7 +18,8 @@ public class ProductDto {
     @NotNull(message = "Material type is required")
     private Product.materialType material;
 
-    private boolean byWeight;
+    @NotNull
+    private Boolean byWeight;
 
     @NotNull
     @PositiveOrZero

@@ -11,6 +11,7 @@ public class StorageDto {
     @NotNull
     private Long productId;
 
+    @NotNull
     @PositiveOrZero
-    private double quantity;
+    private Double quantity;
 }

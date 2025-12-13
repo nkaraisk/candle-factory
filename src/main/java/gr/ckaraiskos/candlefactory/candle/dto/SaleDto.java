@@ -22,7 +22,7 @@ public class SaleDto {
 
     @NotNull
     @Positive
-    double quantity;
+    Double quantity;
 
     BigDecimal totalCost;
 }

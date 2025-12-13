@@ -24,7 +24,7 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(updatable = false, nullable = false, unique = true)
-    private Long Id;
+    private Long id;
 
     @NotBlank
     private String productCode;  // π.χ. "No1", "No3", "L40" (λαμπάδα 40εκ)
