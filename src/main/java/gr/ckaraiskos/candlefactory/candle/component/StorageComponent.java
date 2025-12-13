@@ -88,7 +88,7 @@ public class StorageComponent {
     }
 
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Storage> tryGetAllStorages() {
         log.info("Trying to retrieve all storages.");
 
@@ -99,7 +99,7 @@ public class StorageComponent {
     }
 
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Storage> tryGetAllStoragesByMaterial(Product.materialType material) {
         log.info("Trying to retrieve all storages by material procedure.");
 
@@ -110,7 +110,7 @@ public class StorageComponent {
     }
 
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Storage> tryGetAllStoragesByProductCode(String productCode) {
         log.info("Trying to retrieve all storages by product code procedure.");
 
@@ -121,7 +121,7 @@ public class StorageComponent {
     }
 
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Storage tryGetStorageByProductId(Long id) throws EntityNotFoundException {
         log.info("Trying to retrieve storage by product id.");
 
@@ -140,7 +140,7 @@ public class StorageComponent {
     }
 
 
-    @Transactional
+    @Transactional(readOnly = true)
     public void initiateStorage(Product product) throws EntityAlreadyExistsException {
         log.info("Trying to initiate storage.");
 
@@ -162,7 +162,7 @@ public class StorageComponent {
     }
 
 
-    @Transactional
+    @Transactional(readOnly = true)
     public void deleteByProduct(Product product) throws EntityNotFoundException {
         log.info("Trying to delete storage by product id.");
 

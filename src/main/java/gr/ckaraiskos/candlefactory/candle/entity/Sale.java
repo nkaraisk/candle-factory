@@ -34,11 +34,6 @@ public class Sale {
     @Positive
     private double quantity;
 
-    private BigDecimal cost;
+    private BigDecimal cost = BigDecimal.ZERO;
 
-    public BigDecimal calculateCost() {
-        BigDecimal weightBD = BigDecimal.valueOf(quantity);
-
-        return weightBD.multiply(cost);
-    }
 }

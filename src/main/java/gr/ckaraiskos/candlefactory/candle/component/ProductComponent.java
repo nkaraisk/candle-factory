@@ -143,6 +143,7 @@ public class ProductComponent {
         productRepository.save(product);
     }
 
+    @Transactional(readOnly = true)
     public List<Product> tryGetAllProducts() throws EntityNotFoundException {
         log.info("Trying to get all products");
 
@@ -156,6 +157,7 @@ public class ProductComponent {
         return products;
     }
 
+    @Transactional(readOnly = true)
     public List<Product> tryGetAllProductsByMaterial(Product.materialType materialType) throws EntityNotFoundException {
         log.info("Trying to get all products by material type");
 
@@ -169,6 +171,7 @@ public class ProductComponent {
         return products;
     }
 
+    @Transactional(readOnly = true)
     public List<Product> tryGetAllProductsByProductCode(String productCode) throws EntityNotFoundException {
         log.info("Trying to get all products by product code");
 
@@ -182,6 +185,7 @@ public class ProductComponent {
         return products;
     }
 
+    @Transactional(readOnly = true)
     public Product tryGetSpecificProduct(Product.materialType material, String productCode) throws EntityNotFoundException {
         log.info("Trying to get specific product by material type and product code");
 
@@ -195,6 +199,7 @@ public class ProductComponent {
         throw new EntityNotFoundException("Product with material: " + material + " and product code: " + productCode + " not found.");
     }
 
+    @Transactional
     public Product tryFindProduct(Long productId) throws EntityNotFoundException {
         log.info("Trying to find product with id {}", productId);
 

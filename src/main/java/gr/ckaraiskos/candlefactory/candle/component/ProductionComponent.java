@@ -109,7 +109,7 @@ public class ProductionComponent {
         log.info("Removed production successfully.");
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Production> tryGetAllProductions() {
         log.info("Trying to retrieve all productions.");
 
@@ -119,7 +119,7 @@ public class ProductionComponent {
         return productions;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Production> tryGetProductionByProductId(Long id) throws EntityNotFoundException {
         log.info("Trying to retrieve all productions with product id " + id);
 
@@ -129,7 +129,7 @@ public class ProductionComponent {
         return productions;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Production> tryGetAllProductionsByDate(LocalDate date) throws EntityNotFoundException {
         log.info("Trying to retrieve all productions with date " + date);
 
@@ -139,7 +139,7 @@ public class ProductionComponent {
         return productions;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Production tryGetProductionByDateAndProductId(LocalDate date, Long productId) throws EntityNotFoundException {
         log.info("Trying to retrieve production by date and product id");
 
@@ -153,7 +153,7 @@ public class ProductionComponent {
         return production.get();
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Production> tryGetAllInDateRange(LocalDate fromDate, LocalDate toDate) {
         log.info("Trying to retrieve all productions from date " + fromDate + " to date " + toDate);
 

@@ -144,6 +144,7 @@ public class LeaveRules {
         throw new EntityNotFoundException("No leave found with id: " + requestedLeave.getLeaveId() + ".");
     }
 
+    @Transactional(readOnly = true)
     public List<Leave> leavesFind(Long workerId) throws LeaveComponentFailureException {
         List<Leave> leaves = leaveRepository.findAllByWorker_Id(workerId);
 
@@ -156,6 +157,7 @@ public class LeaveRules {
         return leaves;
     }
 
+    @Transactional(readOnly = true)
     public List<Leave> leavesDayFind() throws LeaveComponentFailureException {
         List<Leave> leaves = leaveRepository.findOverlappingLeaves(LocalDate.now(),  LocalDate.now());
 

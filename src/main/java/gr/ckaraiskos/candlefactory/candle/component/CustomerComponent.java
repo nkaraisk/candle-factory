@@ -2,6 +2,7 @@ package gr.ckaraiskos.candlefactory.candle.component;
 
 import gr.ckaraiskos.candlefactory.candle.dto.CustomerDto;
 import gr.ckaraiskos.candlefactory.candle.entity.Customer;
+import gr.ckaraiskos.candlefactory.candle.entity.Product;
 import gr.ckaraiskos.candlefactory.candle.exception.EntityAlreadyExistsException;
 import gr.ckaraiskos.candlefactory.candle.exception.EntityNotFoundException;
 import gr.ckaraiskos.candlefactory.candle.exception.FailedDeletionException;
@@ -22,6 +23,7 @@ public class CustomerComponent {
 
     private final CustomerRepository customerRepository;
 
+    @Transactional
     public Customer tryAddCustomer(CustomerDto newCustomer) throws EntityAlreadyExistsException {
         log.info("Checking customer with name:{}.", newCustomer.getCustomerName());
         Optional<Customer> customer = customerRepository.findByName(newCustomer.getCustomerName());
@@ -42,6 +44,7 @@ public class CustomerComponent {
         return newCustomerEntity;
     }
 
+    @Transactional
     public Customer tryUpdateCustomer(CustomerDto changesCustomer) throws EntityNotFoundException {
         log.info("Checking customer with Id:{}.", changesCustomer.getCustomerId());
         Optional<Customer> customer = customerRepository.findById(changesCustomer.getCustomerId());
@@ -64,6 +67,7 @@ public class CustomerComponent {
         throw new EntityNotFoundException("Customer with Id:" + changesCustomer.getCustomerId() + " does not exist.");
     }
 
+    @Transactional
     public void tryDeleteCustomer(Long customerId) throws EntityNotFoundException, FailedDeletionException {
         log.info("Searching customer with Id:{}.", customerId);
         customerRepository.findById(customerId)
@@ -84,6 +88,7 @@ public class CustomerComponent {
         log.info("Successfully deleted customer.");
     }
 
+    @Transactional(readOnly = true)
     public List<Customer> tryGetAll() throws EntityNotFoundException {
         log.info("Trying to retrieve all customers.");
         List<Customer> customers = customerRepository.findAll();
@@ -97,6 +102,7 @@ public class CustomerComponent {
         return customers;
     }
 
+    @Transactional(readOnly = true)
     public Customer tryGetCustomerByName(String customerName) throws EntityNotFoundException {
         log.info("Trying to retrieve customer by name.");
         Optional<Customer> customer = customerRepository.findByName(customerName);
@@ -110,6 +116,7 @@ public class CustomerComponent {
         throw new EntityNotFoundException("No customers found.");
     }
 
+    @Transactional(readOnly = true)
     public Customer tryGetCustomerByPhone(String customerPhone) throws EntityNotFoundException {
         log.info("Trying to retrieve customer by phone number.");
         Optional<Customer> customer = customerRepository.findByPhoneNumber(customerPhone);
@@ -147,5 +154,18 @@ public class CustomerComponent {
         log.info("Successfully updated customer debt to {}.", newDebt);
 
         return newDebt;
+    }
+
+    @Transactional
+    public Customer tryFindCustomer(Long customerId) throws EntityNotFoundException {
+        log.info("Trying to find customer with Id:{}.", customerId);
+
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> {
+                    log.error("Product with id {} not found.", customerId);
+                    return new EntityNotFoundException("Product with id:" + customerId + " not found.");
+                });
+
+        return customer;
     }
 }
