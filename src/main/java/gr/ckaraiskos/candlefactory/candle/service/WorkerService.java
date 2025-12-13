@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -113,7 +114,9 @@ public class WorkerService {
 
         Optional<Worker> existingWorker = workerRepository.findWorkerById(workerId);
         if (existingWorker.isPresent()) {
-            Worker updatedWorker = Worker.builder().firstName(newData.getFirstName())
+            Worker updatedWorker = Worker.builder()
+                    .id(workerId)
+                    .firstName(newData.getFirstName())
                     .lastName(newData.getLastName())
                     .phoneNumber(newData.getPhoneNumber())
                     .build();
@@ -128,6 +131,8 @@ public class WorkerService {
         throw new EntityNotFoundException("No Worker found with id: " + workerId + ".");
     }
 
+
+    @Transactional
     public ResponseEntity<Void> deleteWorker(Long workerId) {
 
         log.info("Deleting all leaves of worker with id {}.", workerId);
