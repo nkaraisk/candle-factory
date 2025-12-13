@@ -1,28 +1,24 @@
 package gr.ckaraiskos.candlefactory.candle.dto;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import lombok.Data;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 
 @Data
 public class SaleDto {
-    Long id;
+    private Long id;
 
     @NotNull
-    Long customerId;
+    private Long customerId;
 
     @NotNull
-    LocalDate date;
+    private Long productId;
 
     @NotNull
-    Long productId;
+    private Double quantity;
 
-    @NotNull
-    @Positive
-    Double quantity;
+    private LocalDate date;
 
-    BigDecimal totalCost;
+    private BigDecimal totalCost;
 }
