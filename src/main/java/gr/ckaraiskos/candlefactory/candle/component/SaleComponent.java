@@ -7,6 +7,7 @@ import gr.ckaraiskos.candlefactory.candle.entity.Sale;
 import gr.ckaraiskos.candlefactory.candle.entity.Storage;
 import gr.ckaraiskos.candlefactory.candle.exception.EntityAlreadyExistsException;
 import gr.ckaraiskos.candlefactory.candle.exception.EntityNotFoundException;
+import gr.ckaraiskos.candlefactory.candle.exception.StorageViolationException;
 import gr.ckaraiskos.candlefactory.candle.repository.SaleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,11 +31,17 @@ public class SaleComponent {
     private final CustomerComponent customerComponent;
 
     @Transactional
-    public Sale tryAddSale(SaleDto saleDto) throws EntityAlreadyExistsException, EntityNotFoundException {
+    public Sale tryAddSale(SaleDto saleDto) throws EntityAlreadyExistsException, EntityNotFoundException, StorageViolationException {
         log.info("Trying to add sale.");
 
         Product product = productComponent.tryFindProduct(saleDto.getProductId());
         Customer customer = customerComponent.tryFindCustomer(saleDto.getCustomerId());
+        Storage storage = storageComponent.tryGetStorageByProductId(saleDto.getProductId());
+
+        if(saleDto.getQuantity() > storage.getQuantity()) {
+            log.info("Quantity is greater than the storage quantity.");
+            throw new StorageViolationException("Quantity is greater than the storage quantity.");
+        }
 
         Sale newSale = Sale.builder()
                 .date(saleDto.getDate())
@@ -56,7 +63,6 @@ public class SaleComponent {
         customerComponent.modifyDebt(newSale.getCost(), customer.getId());
 
         log.info("Updating Storage.");
-        Storage storage = storageComponent.tryGetStorageByProductId(saleDto.getProductId());
         storageComponent.tryUpdateStorage(storage.getId(), storage.getQuantity() - saleDto.getQuantity());
 
         log.info("Saving sale.");
@@ -67,7 +73,7 @@ public class SaleComponent {
     }
 
     @Transactional
-    public Sale tryUpdateSale(SaleDto saleDto) throws EntityNotFoundException {
+    public Sale tryUpdateSale(SaleDto saleDto) throws EntityNotFoundException, StorageViolationException {
         log.info("Trying to update sale.");
 
         Sale sale = saleRepository.findById(saleDto.getId())
@@ -84,7 +90,6 @@ public class SaleComponent {
         // Επιστρέφουμε το εμπόρευμα στην αποθήκη
         Storage oldStorage = storageComponent.tryGetStorageByProductId(sale.getProductType().getId());
         storageComponent.tryUpdateStorage(oldStorage.getId(), oldStorage.getQuantity() + sale.getQuantity());
-
 
         // --- ΕΝΗΜΕΡΩΣΗ ΑΝΤΙΚΕΙΜΕΝΟΥ ---
         Customer newCustomer = customerComponent.tryFindCustomer(saleDto.getCustomerId());
@@ -111,6 +116,14 @@ public class SaleComponent {
         // Προσοχή: Αν το προϊόν είναι ίδιο, το oldStorage έχει ήδη ενημερωθεί στην αρχική κατάσταση,
         // οπότε τραβάμε φρέσκα δεδομένα για σιγουριά.
         Storage targetStorage = storageComponent.tryGetStorageByProductId(newProduct.getId());
+
+        // Ελέγχουμε αν η διαθέσιμη ποσότητα (που περιλαμβάνει και την επιστροφή αν είναι ίδιο προϊόν)
+        // επαρκεί για τη νέα ζήτηση.
+        if (targetStorage.getQuantity() < saleDto.getQuantity()) {
+            log.error("Insufficient stock. Available: {}, Requested: {}", targetStorage.getQuantity(), saleDto.getQuantity());
+            throw new StorageViolationException("Insufficient stock for product: " + newProduct.getProductCode());
+        }
+
         storageComponent.tryUpdateStorage(targetStorage.getId(), targetStorage.getQuantity() - saleDto.getQuantity());
 
         // 5. Αποθήκευση

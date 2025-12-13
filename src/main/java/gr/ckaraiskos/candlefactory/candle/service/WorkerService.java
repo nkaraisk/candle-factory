@@ -23,6 +23,7 @@ public class WorkerService {
     private final WorkerRepository workerRepository;
     private final LeaveRepository leaveRepository;
 
+    @Transactional
     public Worker createWorker(WorkerDto newWorkerDto) throws EntityAlreadyExistsException {
 
         Optional<Worker> possibleNewWorker = workerRepository.findWorkerByFirstNameAndLastNameAndPhoneNumber(newWorkerDto.getFirstName(), newWorkerDto.getLastName(), newWorkerDto.getPhoneNumber());

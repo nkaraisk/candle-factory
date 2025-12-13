@@ -55,7 +55,29 @@ public class LeaveRules {
 
         List<Leave> overlapping = leaveRepository.findOverlappingLeaves(requestedLeave.getStartDate(), requestedLeave.getEndDate());
 
-        int count = overlapping.size();
+        boolean isWorkerAlreadyOnLeave = overlapping.stream()
+                // Φίλτρο για εξαίρεση του εαυτού της (περίπτωση Edit) ---
+                .filter(leave -> {
+                    // Αν το requestedLeave έχει ID (είναι Edit) και είναι ίδιο με της leave της λίστας, το αγνοούμε
+                    if (requestedLeave.getLeaveId() != null) {
+                        return !leave.getId().equals(requestedLeave.getLeaveId());
+                    }
+                    return true; // Αν είναι new leave (null id), δεν φιλτράρουμε τίποτα
+                })
+                // -------------------------------------------------------------------------
+                .anyMatch(leave -> leave.getWorker().getId().equals(requestedLeave.getWorkerId()));
+
+        if (isWorkerAlreadyOnLeave) {
+            throw new LeaveComponentFailureException("Leave declined: Worker already has a leave during these dates.");
+        }
+
+        // Σημαντικό: Πρέπει να φιλτράρουμε τη λίστα και για τους παρακάτω υπολογισμούς
+        // αλλιώς το count θα είναι λάθος στο Edit.
+        List<Leave> actualOverlappingOthers = overlapping.stream()
+                .filter(leave -> requestedLeave.getLeaveId() == null || !leave.getId().equals(requestedLeave.getLeaveId()))
+                .toList();
+
+        int count = actualOverlappingOthers.size();
 
         if (count == 0) {
             return; // επιτρέπεται
@@ -66,11 +88,11 @@ public class LeaveRules {
         }
 
         // count >= 2 → πρέπει να ελέγξουμε αν πάμε σε "όλοι"
-        Set<Long> workersOnLeave = overlapping.stream()
+        Set<Long> workersOnLeave = actualOverlappingOthers.stream()
                 .map(l -> l.getWorker().getId())
                 .collect(Collectors.toSet());
 
-        workersOnLeave.add(requestedLeave.getWorkerId()); // include the NEW one
+        workersOnLeave.add(requestedLeave.getWorkerId()); // include the NEW/UPDATED one
 
         long totalWorkers = workerRepository.count();
 

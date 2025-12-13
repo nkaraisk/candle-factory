@@ -5,6 +5,7 @@ import gr.ckaraiskos.candlefactory.candle.dto.SaleDto;
 import gr.ckaraiskos.candlefactory.candle.entity.Sale;
 import gr.ckaraiskos.candlefactory.candle.exception.EntityAlreadyExistsException;
 import gr.ckaraiskos.candlefactory.candle.exception.EntityNotFoundException;
+import gr.ckaraiskos.candlefactory.candle.exception.StorageViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -20,13 +21,13 @@ public class SaleService {
 
     private final SaleComponent saleComponent;
 
-    public Sale newSale(SaleDto saleDto) throws EntityAlreadyExistsException, EntityNotFoundException {
+    public Sale newSale(SaleDto saleDto) throws EntityAlreadyExistsException, EntityNotFoundException, StorageViolationException {
         log.info("Start adding procedure.");
 
         return saleComponent.tryAddSale(saleDto);
     }
 
-    public Sale updateSale(SaleDto saleDto) throws EntityNotFoundException {
+    public Sale updateSale(SaleDto saleDto) throws EntityNotFoundException, StorageViolationException {
         log.info("Start update procedure.");
 
         return saleComponent.tryUpdateSale(saleDto);

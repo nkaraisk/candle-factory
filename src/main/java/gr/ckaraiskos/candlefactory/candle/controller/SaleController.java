@@ -4,6 +4,7 @@ import gr.ckaraiskos.candlefactory.candle.dto.SaleDto;
 import gr.ckaraiskos.candlefactory.candle.entity.Sale;
 import gr.ckaraiskos.candlefactory.candle.exception.EntityAlreadyExistsException;
 import gr.ckaraiskos.candlefactory.candle.exception.EntityNotFoundException;
+import gr.ckaraiskos.candlefactory.candle.exception.StorageViolationException;
 import gr.ckaraiskos.candlefactory.candle.service.SaleService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -28,14 +29,14 @@ public class SaleController {
     }
 
     @PostMapping("/add")
-    ResponseEntity<Sale> addSale(@Valid @RequestBody SaleDto saleDto) throws EntityAlreadyExistsException, EntityNotFoundException {
+    ResponseEntity<Sale> addSale(@Valid @RequestBody SaleDto saleDto) throws EntityAlreadyExistsException, EntityNotFoundException, StorageViolationException {
         log.info("Received adding request for sale.");
 
         return ResponseEntity.ok().body(saleService.newSale(saleDto));
     }
 
     @PutMapping("/edit")
-    ResponseEntity<Sale> editSale(@Valid @RequestBody SaleDto saleDto) throws EntityNotFoundException {
+    ResponseEntity<Sale> editSale(@Valid @RequestBody SaleDto saleDto) throws EntityNotFoundException, StorageViolationException {
         log.info("Received edit request for sale.");
 
         return ResponseEntity.ok().body(saleService.updateSale(saleDto));

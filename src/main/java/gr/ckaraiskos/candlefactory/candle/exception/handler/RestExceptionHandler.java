@@ -42,4 +42,10 @@ public class RestExceptionHandler {
         // Επιστρέφουμε 409 CONFLICT
         return ResponseEntity.status(HttpStatus.CONFLICT).body("Δεν μπορεί να ολοκληρωθεί η ενέργεια. Το στοιχείο χρησιμοποιείται ήδη σε άλλη εγγραφή ή υπάρχει παραβίαση μοναδικότητας.");
     }
+
+    @ExceptionHandler(StorageViolationException.class)
+    public ResponseEntity<String> handleStorageViolationException(StorageViolationException ex) {
+        log.error("StorageViolationException", ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
 }

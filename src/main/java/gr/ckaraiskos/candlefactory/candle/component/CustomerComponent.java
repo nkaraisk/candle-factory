@@ -162,8 +162,8 @@ public class CustomerComponent {
 
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> {
-                    log.error("Product with id {} not found.", customerId);
-                    return new EntityNotFoundException("Product with id:" + customerId + " not found.");
+                    log.error("Customer with id {} not found.", customerId);
+                    return new EntityNotFoundException("Customer with id:" + customerId + " not found.");
                 });
 
         return customer;

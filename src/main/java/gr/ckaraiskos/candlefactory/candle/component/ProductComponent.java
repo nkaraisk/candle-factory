@@ -70,8 +70,9 @@ public class ProductComponent {
         Product existingProduct = productRepository.findById(updateProductDto.getProductId())
                 .orElseThrow(() -> {
                     log.error("Product with id {} not found.", updateProductDto.getProductId());
-                    return new EntityNotFoundException("Product with id:" +updateProductDto.getProductId() + "not found.");
+                    return new EntityNotFoundException("Product with id:" + updateProductDto.getProductId() + "not found.");
                 });
+        log.info("Product exists.");
 
         if (existingProduct.isDeleted()) {
             log.error("Product is deleted.");
