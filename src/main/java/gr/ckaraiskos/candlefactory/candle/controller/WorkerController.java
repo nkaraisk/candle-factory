@@ -46,7 +46,7 @@ public class WorkerController {
         return workerService.getWorkerByFullName(workerDto);
     }
 
-    @GetMapping("/firsName")
+    @GetMapping("/firstName")
     public ResponseEntity<List<Worker>> getWorkerByName(@RequestBody WorkerDto workerDto) throws EntityNotFoundException {
         log.info("Get worker by name");
 
