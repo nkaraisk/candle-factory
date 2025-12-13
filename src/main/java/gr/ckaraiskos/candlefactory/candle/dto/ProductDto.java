@@ -3,7 +3,6 @@ package gr.ckaraiskos.candlefactory.candle.dto;
 import gr.ckaraiskos.candlefactory.candle.entity.Product;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -12,16 +11,15 @@ import java.math.BigDecimal;
 public class ProductDto {
     private Long productId;
 
-    @NotBlank(message = "Product code cannot be empty")
+    @NotBlank
     private String productCode;
 
-    @NotNull(message = "Material type is required")
+    @NotNull
     private Product.materialType material;
 
     @NotNull
     private Boolean byWeight;
 
     @NotNull
-    @PositiveOrZero
     private BigDecimal price;
 }
