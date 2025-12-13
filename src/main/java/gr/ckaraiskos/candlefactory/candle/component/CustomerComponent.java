@@ -50,7 +50,7 @@ public class CustomerComponent {
         Optional<Customer> customer = customerRepository.findById(changesCustomer.getCustomerId());
 
         if (customer.isPresent()) {
-            Customer updatedCustomer = Customer.builder().Id(changesCustomer.getCustomerId())
+            Customer updatedCustomer = Customer.builder().id(changesCustomer.getCustomerId())
                     .name(changesCustomer.getCustomerName())
                     .phoneNumber(changesCustomer.getCustomerPhone())
                     .debt(customer.get().getDebt())

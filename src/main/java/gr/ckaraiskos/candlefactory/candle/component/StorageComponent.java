@@ -6,6 +6,7 @@ import gr.ckaraiskos.candlefactory.candle.entity.Product;
 import gr.ckaraiskos.candlefactory.candle.entity.Storage;
 import gr.ckaraiskos.candlefactory.candle.exception.EntityAlreadyExistsException;
 import gr.ckaraiskos.candlefactory.candle.exception.EntityNotFoundException;
+import gr.ckaraiskos.candlefactory.candle.repository.ProductRepository;
 import gr.ckaraiskos.candlefactory.candle.repository.StorageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,14 +22,15 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class StorageComponent {
 
-    private final ProductComponent productComponent;
+    private final ProductRepository productRepository;
     private final StorageRepository storageRepository;
 
     @Transactional
     public Storage tryAddStorage(StorageDto storageDto) throws EntityAlreadyExistsException, EntityNotFoundException {
         log.info("Trying to add storage.");
 
-        Product product = productComponent.tryFindProduct(storageDto.getProductId());
+        Product product = productRepository.findById(storageDto.getProductId())
+                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
 
         log.info("Checking if storage already exists.");
         Optional<Storage> optionalStorage = storageRepository.findStorageByProduct(product);
@@ -125,7 +127,8 @@ public class StorageComponent {
     public Storage tryGetStorageByProductId(Long id) throws EntityNotFoundException {
         log.info("Trying to retrieve storage by product id.");
 
-        Product product = productComponent.tryFindProduct(id);
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
 
         log.info("Checking if storage exists.");
         Optional<Storage> optionalStorage = storageRepository.findStorageByProduct(product);

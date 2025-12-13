@@ -39,7 +39,7 @@ public class ProductComponent {
 
             // ΕΝΗΜΕΡΩΣΗ με τα νέα δεδομένα που έστειλε ο χρήστης
             existing.setPrice(newProductDto.getPrice());
-            existing.setByWeight(newProductDto.isByWeight());
+            existing.setByWeight(newProductDto.getByWeight());
 
             productRepository.save(existing);
 
@@ -49,7 +49,7 @@ public class ProductComponent {
         Product newProduct = Product.builder().material(newProductDto.getMaterial())
                 .productCode(newProductDto.getProductCode())
                 .price(newProductDto.getPrice())
-                .byWeight(newProductDto.isByWeight())
+                .byWeight(newProductDto.getByWeight())
                 .build();
 
         log.info("Saving product.");
@@ -97,7 +97,7 @@ public class ProductComponent {
         existingProduct.setMaterial(updateProductDto.getMaterial());
         existingProduct.setProductCode(updateProductDto.getProductCode());
         existingProduct.setPrice(updateProductDto.getPrice());
-        existingProduct.setByWeight(updateProductDto.isByWeight());
+        existingProduct.setByWeight(updateProductDto.getByWeight());
         existingProduct.setDeleted(false);
         productRepository.save(existingProduct);
 

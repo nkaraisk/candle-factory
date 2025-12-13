@@ -29,7 +29,7 @@ public class WorkerController {
     public ResponseEntity<Worker> addWorker(@RequestBody WorkerDto newWorkerRequest) throws EntityAlreadyExistsException {
         log.info("Register a new Worker");
 
-        return workerService.createWorker(newWorkerRequest);
+        return ResponseEntity.ok().body(workerService.createWorker(newWorkerRequest));
     }
 
     @GetMapping("/all")

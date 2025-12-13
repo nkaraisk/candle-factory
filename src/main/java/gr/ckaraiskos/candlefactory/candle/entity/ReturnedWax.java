@@ -39,7 +39,7 @@ public class ReturnedWax {
     private double weight;
 
     @Column(precision = 19, scale = 2)
-    private BigDecimal value;
+    private BigDecimal totalValue;
 
     private String note;
 

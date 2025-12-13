@@ -3,7 +3,6 @@ package gr.ckaraiskos.candlefactory.candle.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 
@@ -27,7 +26,7 @@ public class Product {
     private Long id;
 
     @NotBlank
-    private String productCode;  // π.χ. "No1", "No3", "L40" (λαμπάδα 40εκ)
+    private String productCode;  //  "No1", "No3", "L40" (λαμπάδα 40εκ)
 
     @NotNull
     @Enumerated(EnumType.STRING)

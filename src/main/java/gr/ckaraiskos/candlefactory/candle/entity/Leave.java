@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
 @Entity
+@Table(name = "worker_leaves") // <--- ΠΡΟΣΘΗΚΗ ΑΥΤΟΥ (Για να αποφύγουμε το reserved keyword)
 @Builder
 @Setter
 @Getter

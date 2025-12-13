@@ -22,7 +22,7 @@ public class WorkerService {
     private final WorkerRepository workerRepository;
     private final LeaveRepository leaveRepository;
 
-    public ResponseEntity<Worker> createWorker(WorkerDto newWorkerDto) throws EntityAlreadyExistsException {
+    public Worker createWorker(WorkerDto newWorkerDto) throws EntityAlreadyExistsException {
 
         Optional<Worker> possibleNewWorker = workerRepository.findWorkerByFirstNameAndLastNameAndPhoneNumber(newWorkerDto.getFirstName(), newWorkerDto.getLastName(), newWorkerDto.getPhoneNumber());
 
@@ -38,7 +38,7 @@ public class WorkerService {
 
             workerRepository.save(newWorker);
 
-            return  ResponseEntity.ok().body(newWorker);
+            return newWorker;
         }
     }
 
