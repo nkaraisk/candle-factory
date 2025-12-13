@@ -280,6 +280,10 @@
   margin-top: 12px;
 }
 
+.search-grid.compact {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
 .search-card {
   background: #fff;
   border: 1px solid var(--border);

@@ -28,6 +28,14 @@ public class CustomerService {
         return ResponseEntity.ok(customerComponent.tryGetAll());
     }
 
+    public ResponseEntity<Customer> getByName(String name) {
+        return ResponseEntity.ok(customerComponent.tryGetCustomerByName(name));
+    }
+
+    public ResponseEntity<Customer> getByPhone(String phone) {
+        return ResponseEntity.ok(customerComponent.tryGetCustomerByPhone(phone));
+    }
+
     public ResponseEntity<Customer> update(Long customerId, CustomerDto dto) {
         log.info("Updating customer {}", customerId);
         dto.setCustomerId(customerId);
