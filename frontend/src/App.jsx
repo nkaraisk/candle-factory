@@ -47,6 +47,7 @@ function App() {
   const [searchResults, setSearchResults] = useState([]);
   const [searchContext, setSearchContext] = useState('');
   const [searching, setSearching] = useState(false);
+  const [activeView, setActiveView] = useState('team');
   const [products, setProducts] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [productions, setProductions] = useState([]);
@@ -538,6 +539,12 @@ function App() {
   const mostLeaveHeavy = [...workers]
     .sort((a, b) => (b.daysOfLeave ?? 0) - (a.daysOfLeave ?? 0))
     .slice(0, 3);
+  const viewTabs = [
+    { id: 'team', label: 'Team & Leave', badge: workers.length },
+    { id: 'lookup', label: 'Lookup', badge: searchResults.length || '·' },
+    { id: 'inventory', label: 'Inventory', badge: products.length },
+    { id: 'crm', label: 'CRM & Sales', badge: customers.length },
+  ];
 
   return (
     <div className="app-shell">
@@ -570,6 +577,21 @@ function App() {
         </div>
       ) : null}
 
+      <div className="view-tabs">
+        {viewTabs.map((tab) => (
+          <button
+            key={tab.id}
+            className={`view-tab ${activeView === tab.id ? 'is-active' : ''}`}
+            onClick={() => setActiveView(tab.id)}
+            type="button"
+          >
+            <span>{tab.label}</span>
+            <span className="pill ghost tiny">{tab.badge}</span>
+          </button>
+        ))}
+      </div>
+
+      {activeView === 'team' ? (
       <div className="insights">
         <div className="insight-card">
           <p className="eyebrow">Availability</p>
@@ -619,7 +641,9 @@ function App() {
           </ul>
         </div>
       </div>
+      ) : null}
 
+      {activeView === 'lookup' ? (
       <section className="panel spotlight">
         <div className="panel-header">
           <div>
@@ -788,7 +812,9 @@ function App() {
           )}
         </div>
       </section>
+      ) : null}
 
+      {activeView === 'team' ? (
       <div className="grid">
         <section className="panel">
           <div className="panel-header">
@@ -872,8 +898,11 @@ function App() {
           </div>
         </section>
       </div>
+      ) : null}
 
+      {(activeView === 'inventory' || activeView === 'crm') ? (
       <div className="grid ops-grid">
+        {activeView === 'inventory' ? (
         <section className="panel">
           <div className="panel-header">
             <div>
@@ -1025,7 +1054,9 @@ function App() {
             </div>
           </div>
         </section>
+        ) : null}
 
+        {activeView === 'crm' ? (
         <section className="panel">
           <div className="panel-header">
             <div>
@@ -1238,7 +1269,7 @@ function App() {
                     {item.note ? <p className="muted small">{item.note}</p> : null}
                   </div>
                   <div className="actions">
-                    <span className="pill ghost mono">€{item.value ?? 0}</span>
+                    <span className="pill ghost mono">€{item.totalValue ?? item.value ?? 0}</span>
                     <button className="ghost danger" type="button" onClick={() => handleReturnDelete(item.id)}>
                       Delete
                     </button>
@@ -1249,7 +1280,9 @@ function App() {
             </div>
           </div>
         </section>
+        ) : null}
       </div>
+      ) : null}
     </div>
   );
 }
