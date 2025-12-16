@@ -55,52 +55,55 @@ public class LeaveRules {
 
         List<Leave> overlapping = leaveRepository.findOverlappingLeaves(requestedLeave.getStartDate(), requestedLeave.getEndDate());
 
+        // Έλεγχος αν ο ΙΔΙΟΣ εργαζόμενος έχει ήδη άδεια (εκτός αν είναι edit στον εαυτό του)
         boolean isWorkerAlreadyOnLeave = overlapping.stream()
-                // Φίλτρο για εξαίρεση του εαυτού της (περίπτωση Edit) ---
                 .filter(leave -> {
-                    // Αν το requestedLeave έχει ID (είναι Edit) και είναι ίδιο με της leave της λίστας, το αγνοούμε
                     if (requestedLeave.getLeaveId() != null) {
                         return !leave.getId().equals(requestedLeave.getLeaveId());
                     }
-                    return true; // Αν είναι new leave (null id), δεν φιλτράρουμε τίποτα
+                    return true;
                 })
-                // -------------------------------------------------------------------------
                 .anyMatch(leave -> leave.getWorker().getId().equals(requestedLeave.getWorkerId()));
 
         if (isWorkerAlreadyOnLeave) {
             throw new LeaveComponentFailureException("Leave declined: Worker already has a leave during these dates.");
         }
 
-        // Σημαντικό: Πρέπει να φιλτράρουμε τη λίστα και για τους παρακάτω υπολογισμούς
-        // αλλιώς το count θα είναι λάθος στο Edit.
+        // Βρίσκουμε ποιοι ΑΛΛΟΙ λείπουν
         List<Leave> actualOverlappingOthers = overlapping.stream()
                 .filter(leave -> requestedLeave.getLeaveId() == null || !leave.getId().equals(requestedLeave.getLeaveId()))
                 .toList();
 
-        int count = actualOverlappingOthers.size();
-
-        if (count == 0) {
-            return; // επιτρέπεται
-        }
-
-        if (count == 1) {
-            return; // επιτρέπεται -> πάμε σε "μόνο ένας" ή "όλοι"
-        }
-
-        // count >= 2 → πρέπει να ελέγξουμε αν πάμε σε "όλοι"
-        Set<Long> workersOnLeave = actualOverlappingOthers.stream()
+        // Μαζεύουμε τα μοναδικά IDs των απόντων
+        Set<Long> workersOnLeaveIds = actualOverlappingOthers.stream()
                 .map(l -> l.getWorker().getId())
                 .collect(Collectors.toSet());
 
-        workersOnLeave.add(requestedLeave.getWorkerId()); // include the NEW/UPDATED one
+        // Προσθέτουμε τον εργαζόμενο που ζητάει άδεια
+        workersOnLeaveIds.add(requestedLeave.getWorkerId());
 
+        long totalAbsentWorkers = workersOnLeaveIds.size();
         long totalWorkers = workerRepository.count();
 
-        if (workersOnLeave.size() != totalWorkers) {
-            throw new LeaveComponentFailureException("Leave declined: only 1 worker can be absent in the same period");
+        log.info("Total workers absent would be: {} out of {}", totalAbsentWorkers, totalWorkers);
+
+        // --- ΟΙ ΚΑΝΟΝΕΣ ---
+
+        //Λείπει μόνο ένας (ο τρέχων) -> ΕΠΙΤΡΕΠΕΤΑΙ
+        if (totalAbsentWorkers == 1) {
+            return;
         }
 
-        log.info("Approved leave.");
+        // Λείπουν ΟΛΟΙ -> ΕΠΙΤΡΕΠΕΤΑΙ
+        if (totalAbsentWorkers == totalWorkers) {
+            return;
+        }
+
+        // Σε κάθε άλλη περίπτωση ΑΠΑΓΟΡΕΥΕΤΑΙ
+        throw new LeaveComponentFailureException(
+                "Leave declined: Rule violation. Either 1 worker or ALL workers can be absent. " +
+                        "Current plan would have " + totalAbsentWorkers + " workers absent out of " + totalWorkers + "."
+        );
     }
 
     @Transactional
