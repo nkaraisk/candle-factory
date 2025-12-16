@@ -93,11 +93,6 @@ public class CustomerComponent {
         log.info("Trying to retrieve all customers.");
         List<Customer> customers = customerRepository.findAll();
 
-        if (customers.isEmpty()) {
-            log.error("No customers found.");
-            throw new EntityNotFoundException("No customers found.");
-        }
-
         log.info("Successfully retrieved all customers.");
         return customers;
     }
@@ -156,7 +151,7 @@ public class CustomerComponent {
         return newDebt;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Customer tryFindCustomer(Long customerId) throws EntityNotFoundException {
         log.info("Trying to find customer with Id:{}.", customerId);
 

@@ -15,4 +15,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findAllByDeletedAndMaterial(boolean b, Product.materialType materialType);
 
     List<Product> findAllByDeletedAndProductCode(boolean deleted, String productCode);
+
+    List<Product> findAllByDeletedOrderByProductCodeDesc(boolean b);
+
+    List<Product> findAllByDeletedOrderByProductCodeAsc(boolean deleted);
 }

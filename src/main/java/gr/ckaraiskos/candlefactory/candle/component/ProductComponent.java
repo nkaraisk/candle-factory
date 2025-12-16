@@ -148,11 +148,7 @@ public class ProductComponent {
     public List<Product> tryGetAllProducts() throws EntityNotFoundException {
         log.info("Trying to get all products");
 
-        List<Product> products = productRepository.findAllByDeleted(false);
-        if (products.isEmpty()) {
-            log.error("No products found.");
-            throw new EntityNotFoundException("No products found.");
-        }
+        List<Product> products = productRepository.findAllByDeletedOrderByProductCodeAsc(false);
 
         log.info("Successfully retrieved all products.");
         return products;

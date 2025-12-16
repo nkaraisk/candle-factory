@@ -49,10 +49,10 @@ public class WorkerService {
 
         List<Worker> workers = workerRepository.findAll();
 
-        if (workers.isEmpty()) {
-            log.error("No workers found");
-            throw new EntityNotFoundException("No Workers found!");
-        }
+//        if (workers.isEmpty()) {
+//            log.error("No workers found");
+//            throw new EntityNotFoundException("No Workers found!");
+//        }
 
         return ResponseEntity.ok().body(workers);
     }
