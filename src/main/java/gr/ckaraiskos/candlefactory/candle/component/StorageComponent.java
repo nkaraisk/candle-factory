@@ -143,7 +143,7 @@ public class StorageComponent {
     }
 
 
-    @Transactional(readOnly = true)
+    @Transactional
     public void initiateStorage(Product product) throws EntityAlreadyExistsException {
         log.info("Trying to initiate storage.");
 
@@ -165,7 +165,7 @@ public class StorageComponent {
     }
 
 
-    @Transactional(readOnly = true)
+    @Transactional
     public void deleteByProduct(Product product) throws EntityNotFoundException {
         log.info("Trying to delete storage by product id.");
 
