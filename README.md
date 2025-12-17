@@ -116,4 +116,4 @@ Here are the main resources exposed by the backend:
   
 ---
 
-* Author: Nick Karaiskos
+* Author: Christoforos Karaiskos
